@@ -1,5 +1,6 @@
 ---
 title: "HW 04 - Modeling the GSS"
+author: "Taylor Curyto"
 output: html_document
 ---
 
