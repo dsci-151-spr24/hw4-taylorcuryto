@@ -285,8 +285,47 @@ The question is phrased as the following.
 Answers to this question are stored in the `harass5` variable in our dataset.
 
 12. Create a subset of the data that only contains `Yes` and `No` answers for the harassment question. How many responses chose each of these answers?
+
+```{r}
+gss16_harass <- gss16 %>%
+  filter(harass5 %in% c("Yes", "No"))
+
+gss16_harass %>%
+  count(harass5)
+```
+
+***1036 chose no, and 237 chose yes.***
+
 13. Describe how bootstrapping can be used to estimate the proportion of Americans who have been harassed by their superiors or co-workers at their job.
-14. Calculate a 95% bootstrap confidence interval for the proportion of Americans who have been harassed by their superiors or co-workers at their job. Interpret this interval in context of the data.
+
+***Bootstrapping can be used to estimate the proportion of Americans who have been harrassed by their superiors or co-workers at their job because it is a statistical method that can help estimate the uncertainty around a proportion.***
+
+14. Calculate a 95% bootstrap confidence interval for the proportion of Americans who have been harassed by their superiors or co-workers at their job. Interpret this interval in the context of the data. 
+
+```{r}
+
+library(boot)
+
+harass_data <- gss16 %>%
+  filter(harass5 %in% c("Yes", "No")) %>%
+  mutate(harass5_num = if_else(harass5 == "Yes", 1, 0))
+
+prop <- function(data, indices) {
+  sample_data <- data[indices, ]
+  mean(sample_data$harass5_num)
+}
+
+set.seed(123)
+results <- boot(data = harass_data, statistic = prop, R = 1000)
+
+boot_ci <- boot.ci(results, type = "perc")
+boot_ci
+```
+
+***We are 95% confident that the true proportion of Americans who have been harassed by a superior or co-worker is between 15.29% and 19.37%.***
+
 15. Would you expect a 90% confidence interval to be wider or narrower than the interval you calculated above? Explain your reasoning.
+
+***I would expect a 90% confidence interval to be narrower than the interval i calculated because it trades off confidence, in this case 5%, in order to give a more precise estimate.***
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
